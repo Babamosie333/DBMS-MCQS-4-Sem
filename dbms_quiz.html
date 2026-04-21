@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DBMS Quiz — BCA 4th Sem</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  :root {
+    --bg-deep:    #020b14;
+    --bg-card:    #061424;
+    --bg-grid:    #0a1f35;
+    --cyan:       #00ffe7;
+    --cyan-dim:   #00ffe750;
+    --green:      #39ff14;
+    --green-dim:  #39ff1440;
+    --red:        #ff3860;
+    --red-dim:    #ff386030;
+    --gold:       #ffd700;
+    --text-bright:#e0f7fa;
+    --text-mid:   #7ecfdf;
+    --text-dim:   #3a6880;
+    --border:     #1a4060;
+    --radius:     12px;
+    --font-head:  'Orbitron', monospace;
+    --font-body:  'Rajdhani', sans-serif;
+    --font-mono:  'Share Tech Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--text-bright);
+    font-family: var(--font-body);
+    font-size: 17px;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ── PARTICLE CANVAS ── */
+  #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+  /* ── GRID OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 48px 48px;
+    opacity: 0.18;
+    pointer-events: none;
+  }
+
+  /* ── GLOW LINES ── */
+  body::after {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, #00ffe71a 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* ── WRAPPER ── */
+  #app {
+    position: relative; z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    padding: 32px 0 24px;
+    position: relative;
+  }
+  .badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--cyan);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border: 1px solid var(--cyan-dim);
+    padding: 4px 16px;
+    border-radius: 40px;
+    margin-bottom: 14px;
+    animation: pulse-badge 3s ease-in-out infinite;
+  }
+  @keyframes pulse-badge {
+    0%,100% { box-shadow: 0 0 8px var(--cyan-dim); }
+    50%      { box-shadow: 0 0 20px var(--cyan), 0 0 40px var(--cyan-dim); }
+  }
+  h1 {
+    font-family: var(--font-head);
+    font-size: clamp(22px, 5vw, 36px);
+    font-weight: 900;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, var(--cyan) 0%, #a78bfa 50%, var(--cyan) 100%);
+    background-size: 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 4s linear infinite;
+  }
+  @keyframes shimmer { to { background-position: 200% center; } }
+  .subtitle {
+    font-family: var(--font-mono);
+    color: var(--text-mid);
+    font-size: 13px;
+    letter-spacing: 2px;
+    margin-top: 8px;
+  }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 24px;
+    margin-bottom: 22px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-mid);
+  }
+  .stat i { color: var(--cyan); font-size: 14px; }
+  .stat span.val {
+    color: var(--text-bright);
+    font-weight: 700;
+    font-size: 15px;
+  }
+  /* progress bar */
+  .progress-wrap {
+    flex: 1; min-width: 140px;
+    height: 6px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--cyan), #a78bfa);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+    box-shadow: 0 0 8px var(--cyan);
+  }
+
+  /* ── QUESTION CARD ── */
+  .q-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 30px 28px;
+    margin-bottom: 22px;
+    position: relative;
+    overflow: hidden;
+    animation: slide-in 0.35s cubic-bezier(.4,0,.2,1);
+  }
+  @keyframes slide-in {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .q-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--cyan), #a78bfa, var(--cyan));
+    background-size: 200%;
+    animation: shimmer 3s linear infinite;
+  }
+  .q-number {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--cyan);
+    letter-spacing: 2px;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .q-number::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+  .q-text {
+    font-family: var(--font-body);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.6;
+    color: var(--text-bright);
+    margin-bottom: 26px;
+  }
+
+  /* ── OPTIONS ── */
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media(max-width:560px){ .options { grid-template-columns: 1fr; } }
+
+  .opt {
+    position: relative;
+    display: flex; align-items: center; gap: 14px;
+    background: var(--bg-grid);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: border-color .2s, background .2s, transform .15s, box-shadow .2s;
+    user-select: none;
+    overflow: hidden;
+  }
+  .opt::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent, var(--cyan-dim));
+    opacity: 0;
+    transition: opacity .2s;
+  }
+  .opt:hover:not(.disabled) { border-color: var(--cyan); transform: translateY(-2px); box-shadow: 0 4px 20px var(--cyan-dim); }
+  .opt:hover:not(.disabled)::before { opacity: 1; }
+
+  .opt-label {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--cyan);
+    width: 28px; height: 28px;
+    border: 1.5px solid var(--cyan-dim);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background .2s, color .2s;
+  }
+  .opt-text {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+    flex: 1;
+    color: var(--text-bright);
+    position: relative; z-index: 1;
+  }
+  .opt-icon {
+    font-size: 18px;
+    opacity: 0;
+    transition: opacity .3s;
+    flex-shrink: 0;
+  }
+
+  /* CORRECT state */
+  .opt.correct {
+    border-color: var(--green) !important;
+    background: var(--green-dim) !important;
+    box-shadow: 0 0 20px var(--green-dim), 0 0 6px var(--green) !important;
+    animation: correct-pulse 0.6s ease;
+  }
+  .opt.correct .opt-label { background: var(--green); color: #000; border-color: var(--green); }
+  .opt.correct .opt-icon { opacity: 1; color: var(--green); }
+  @keyframes correct-pulse {
+    0%   { box-shadow: 0 0 0 0 var(--green); }
+    50%  { box-shadow: 0 0 30px 10px var(--green-dim); }
+    100% { box-shadow: 0 0 20px var(--green-dim), 0 0 6px var(--green); }
+  }
+
+  /* WRONG state */
+  .opt.wrong {
+    border-color: var(--red) !important;
+    background: var(--red-dim) !important;
+    animation: shake .4s ease;
+  }
+  .opt.wrong .opt-label { background: var(--red); color: #fff; border-color: var(--red); }
+  .opt.wrong .opt-icon { opacity: 1; color: var(--red); }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20%      { transform: translateX(-6px); }
+    40%      { transform: translateX(6px); }
+    60%      { transform: translateX(-4px); }
+    80%      { transform: translateX(4px); }
+  }
+
+  .opt.disabled { cursor: not-allowed; }
+
+  /* ── NAVIGATION ── */
+  .nav-row {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-family: var(--font-head);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    padding: 12px 28px;
+    border-radius: 8px;
+    border: 1.5px solid var(--cyan);
+    background: transparent;
+    color: var(--cyan);
+    cursor: pointer;
+    transition: background .2s, box-shadow .2s, transform .15s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .btn:hover { background: var(--cyan-dim); box-shadow: 0 0 20px var(--cyan-dim); transform: translateY(-2px); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+  .btn.btn-finish {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .btn.btn-finish:hover { background: #ffd70020; box-shadow: 0 0 20px #ffd70040; }
+
+  .q-counter {
+    font-family: var(--font-mono);
+    color: var(--text-mid);
+    font-size: 13px;
+  }
+
+  /* ── QUESTION GRID ── */
+  .grid-toggle {
+    text-align: center; margin-bottom: 16px;
+  }
+  .btn-grid-toggle {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-mid);
+    background: none; border: 1px solid var(--border);
+    padding: 6px 18px; border-radius: 99px; cursor: pointer;
+    transition: all .2s;
+    letter-spacing: 1px;
+  }
+  .btn-grid-toggle:hover { border-color: var(--cyan); color: var(--cyan); }
+
+  .q-grid {
+    display: none;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 22px;
+    animation: slide-in .3s ease;
+  }
+  .q-grid.open { display: block; }
+  .q-grid h3 {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-mid);
+    letter-spacing: 2px;
+    margin-bottom: 14px;
+  }
+  .grid-cells {
+    display: flex; flex-wrap: wrap; gap: 7px;
+  }
+  .gc {
+    width: 36px; height: 36px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-grid);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-mid);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s;
+  }
+  .gc:hover { border-color: var(--cyan); color: var(--cyan); }
+  .gc.current { border-color: var(--cyan); color: var(--cyan); background: var(--cyan-dim); box-shadow: 0 0 10px var(--cyan-dim); }
+  .gc.answered { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+  .gc.skipped  { border-color: var(--red); background: var(--red-dim); color: var(--red); }
+
+  /* ── RESULT SCREEN ── */
+  #result-screen {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+    animation: slide-in .5s ease;
+  }
+  #result-screen.show { display: block; }
+  .result-ring {
+    position: relative;
+    width: 180px; height: 180px;
+    margin: 0 auto 30px;
+  }
+  .result-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring-bg  { fill: none; stroke: var(--border); stroke-width: 10; }
+  .ring-fill { fill: none; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 1.5s cubic-bezier(.4,0,.2,1); stroke-dasharray: 502; }
+  .ring-score {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .ring-score .big { font-family: var(--font-head); font-size: 38px; font-weight: 900; }
+  .ring-score .lbl { font-family: var(--font-mono); font-size: 11px; color: var(--text-mid); letter-spacing: 2px; }
+  .result-grade {
+    font-family: var(--font-head);
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+  }
+  .result-msg {
+    color: var(--text-mid);
+    font-size: 15px;
+    margin-bottom: 30px;
+    font-family: var(--font-mono);
+  }
+  .result-stats {
+    display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 36px;
+  }
+  .rstat {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 28px;
+    min-width: 120px;
+  }
+  .rstat .rv { font-family: var(--font-head); font-size: 26px; font-weight: 700; }
+  .rstat .rk { font-family: var(--font-mono); font-size: 11px; color: var(--text-mid); letter-spacing: 1px; margin-top: 4px; }
+  .btn-restart {
+    font-family: var(--font-head);
+    font-size: 14px;
+    padding: 14px 40px;
+    border-radius: 10px;
+    border: 2px solid var(--cyan);
+    background: transparent;
+    color: var(--cyan);
+    cursor: pointer;
+    letter-spacing: 2px;
+    transition: all .3s;
+  }
+  .btn-restart:hover { background: var(--cyan); color: #000; box-shadow: 0 0 30px var(--cyan); }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 28px 0 10px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 1.5px;
+  }
+  footer a {
+    color: var(--cyan);
+    text-decoration: none;
+    border-bottom: 1px solid var(--cyan-dim);
+    padding-bottom: 1px;
+    transition: color .2s, border-color .2s, text-shadow .2s;
+  }
+  footer a:hover {
+    color: #fff;
+    border-color: var(--cyan);
+    text-shadow: 0 0 10px var(--cyan);
+  }
+  footer .heart { color: var(--red); animation: heartbeat 1.4s ease-in-out infinite; display: inline-block; }
+  @keyframes heartbeat {
+    0%,100% { transform: scale(1); }
+    50%      { transform: scale(1.3); }
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg-deep); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--cyan-dim); }
+
+  /* confetti particle */
+  .confetti-particle {
+    position: fixed;
+    top: -10px;
+    border-radius: 3px;
+    animation: fall linear forwards;
+    pointer-events: none;
+    z-index: 9999;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+<canvas id="particles"></canvas>
+<div id="app">
+
+  <header>
+    <div class="badge"><i class="fa fa-database"></i> &nbsp; BCA-4002</div>
+    <h1>DATABASE MANAGEMENT SYSTEMS</h1>
+    <p class="subtitle">// INTERACTIVE MCQ ASSESSMENT — 100 QUESTIONS //</p>
+  </header>
+
+  <!-- QUIZ SCREEN -->
+  <div id="quiz-screen">
+    <!-- Stats bar -->
+    <div class="stats-bar">
+      <div class="stat"><i class="fa fa-check-circle"></i> Correct <span class="val" id="s-correct">0</span></div>
+      <div class="stat"><i class="fa fa-times-circle"></i> Wrong <span class="val" id="s-wrong">0</span></div>
+      <div class="stat"><i class="fa fa-clock"></i> Time <span class="val" id="s-time">00:00</span></div>
+      <div class="progress-wrap"><div class="progress-fill" id="progress-fill" style="width:1%"></div></div>
+      <div class="stat"><span class="val" id="s-pct">1%</span></div>
+    </div>
+
+    <!-- Question grid toggle -->
+    <div class="grid-toggle">
+      <button class="btn-grid-toggle" id="toggle-grid"><i class="fa fa-th"></i> &nbsp;Question Map</button>
+    </div>
+    <div class="q-grid" id="q-grid">
+      <h3>// QUESTION NAVIGATOR //</h3>
+      <div class="grid-cells" id="grid-cells"></div>
+    </div>
+
+    <!-- Question card -->
+    <div class="q-card" id="q-card">
+      <div class="q-number" id="q-number">QUESTION 01 / 100</div>
+      <div class="q-text" id="q-text">Loading...</div>
+      <div class="options" id="options"></div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-row">
+      <button class="btn" id="btn-prev"><i class="fa fa-chevron-left"></i> PREV</button>
+      <span class="q-counter" id="q-counter">1 / 100</span>
+      <button class="btn" id="btn-next">NEXT <i class="fa fa-chevron-right"></i></button>
+      <button class="btn btn-finish" id="btn-finish"><i class="fa fa-flag-checkered"></i> FINISH</button>
+    </div>
+  </div>
+
+  <!-- Result Screen -->
+  <div id="result-screen">
+    <div class="result-ring">
+      <svg viewBox="0 0 180 180"><circle class="ring-bg" cx="90" cy="90" r="80"/><circle class="ring-fill" id="ring-fill" cx="90" cy="90" r="80"/></svg>
+      <div class="ring-score"><div class="big" id="r-score">--</div><div class="lbl">SCORE</div></div>
+    </div>
+    <div class="result-grade" id="r-grade">--</div>
+    <div class="result-msg" id="r-msg">Calculating results...</div>
+    <div class="result-stats">
+      <div class="rstat"><div class="rv" id="rr-correct" style="color:var(--green)">0</div><div class="rk">CORRECT</div></div>
+      <div class="rstat"><div class="rv" id="rr-wrong"   style="color:var(--red)">0</div><div class="rk">WRONG</div></div>
+      <div class="rstat"><div class="rv" id="rr-skip"    style="color:var(--text-mid)">0</div><div class="rk">SKIPPED</div></div>
+      <div class="rstat"><div class="rv" id="rr-pct"     style="color:var(--cyan)">0%</div><div class="rk">PERCENTAGE</div></div>
+      <div class="rstat"><div class="rv" id="rr-time"    style="color:var(--gold)">0:00</div><div class="rk">TIME TAKEN</div></div>
+    </div>
+    <button class="btn-restart" onclick="restartQuiz()"><i class="fa fa-rotate-right"></i> &nbsp; RESTART QUIZ</button>
+  </div>
+
+  <footer>
+    made with <span class="heart">♥</span> by &nbsp;
+    <a href="https://github.com/Babamosie333" target="_blank" rel="noopener noreferrer">
+      <i class="fa-brands fa-github"></i> &nbsp;Babamosie333
+    </a>
+  </footer>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   QUESTION BANK — 100 DBMS MCQ Questions
+   Units: I(Intro) II(ER) III(Normalization) IV(Relational/SQL) V(Concurrency)
+   ═══════════════════════════════════════════════ */
+const questions = [
+  // ─── UNIT I: Introduction to DBMS ───────────────────────────
+  {
+    q: "Which of the following best defines a Database Management System (DBMS)?",
+    opts: ["A collection of unrelated data files", "Software that manages databases, enabling data storage, retrieval, and manipulation", "A hardware device used to store data", "A programming language used to create databases"],
+    ans: 1
+  },
+  {
+    q: "Which of the following is NOT a characteristic of the database approach?",
+    opts: ["Data independence", "Data redundancy is intentionally maximized", "Data sharing among multiple users", "Data abstraction"],
+    ans: 1
+  },
+  {
+    q: "The three levels of DBMS architecture are:",
+    opts: ["Physical, Logical, View (ANSI/SPARC)", "Input, Processing, Output", "Hardware, Software, User", "Schema, Instance, Database"],
+    ans: 0
+  },
+  {
+    q: "Logical data independence means:",
+    opts: ["Changes in physical storage do not affect the conceptual schema", "Changes in the conceptual schema do not affect application programs", "The database schema cannot be changed", "All levels of the database are independent of each other"],
+    ans: 1
+  },
+  {
+    q: "Physical data independence means:",
+    opts: ["Changes in external schemas do not affect user programs", "Changes in the internal/physical schema do not affect the conceptual schema", "Logical data can be stored anywhere", "Data is physically distributed across multiple servers"],
+    ans: 1
+  },
+  {
+    q: "Which data model represents data as a tree structure with parent-child relationships?",
+    opts: ["Relational Model", "Network Model", "Hierarchical Model", "Object-Oriented Model"],
+    ans: 2
+  },
+  {
+    q: "In the network data model, data is represented as:",
+    opts: ["Tables with rows and columns", "A tree with one parent per child", "A graph where records can have multiple parent and child records", "Objects with attributes and methods"],
+    ans: 2
+  },
+  {
+    q: "The relational data model was proposed by:",
+    opts: ["Peter Chen", "Edgar F. Codd", "Charles Bachman", "E.F. Date"],
+    ans: 1
+  },
+  {
+    q: "A schema in a DBMS refers to:",
+    opts: ["The actual data stored in the database at a given moment", "The overall design/structure of the database", "A type of query language", "The physical storage medium"],
+    ans: 1
+  },
+  {
+    q: "Which component of DBMS architecture is responsible for translating queries into low-level operations?",
+    opts: ["Query Processor", "Transaction Manager", "Buffer Manager", "Disk Manager"],
+    ans: 0
+  },
+  {
+    q: "A database instance refers to:",
+    opts: ["The structure or schema of the database", "The data stored in the database at a particular moment in time", "A specific user account in the database", "A copy of the database"],
+    ans: 1
+  },
+  {
+    q: "Which of the following is an advantage of a DBMS over a traditional file system?",
+    opts: ["Higher data redundancy", "Lack of data sharing", "Elimination of data inconsistency and redundancy", "Simpler implementation"],
+    ans: 2
+  },
+  {
+    q: "The DDL (Data Definition Language) is used to:",
+    opts: ["Retrieve data from the database", "Define and modify the database structure/schema", "Control concurrent access to the database", "Perform mathematical calculations on data"],
+    ans: 1
+  },
+  {
+    q: "DML stands for:",
+    opts: ["Data Management Language", "Data Manipulation Language", "Database Modeling Language", "Data Maintenance Logic"],
+    ans: 1
+  },
+  {
+    q: "Which role is responsible for defining the database structure and access privileges in a DBMS?",
+    opts: ["End User", "Application Programmer", "Database Administrator (DBA)", "System Analyst"],
+    ans: 2
+  },
+
+  // ─── UNIT II: E-R Modeling ──────────────────────────────────
+  {
+    q: "In an E-R diagram, an entity is represented by:",
+    opts: ["An ellipse", "A rectangle", "A diamond", "A double ellipse"],
+    ans: 1
+  },
+  {
+    q: "A relationship in an E-R diagram is represented by:",
+    opts: ["A rectangle", "An ellipse", "A diamond (rhombus)", "A circle"],
+    ans: 2
+  },
+  {
+    q: "An attribute that uniquely identifies each entity in an entity set is called:",
+    opts: ["Derived attribute", "Composite attribute", "Key attribute", "Multi-valued attribute"],
+    ans: 2
+  },
+  {
+    q: "In E-R diagrams, a multi-valued attribute is depicted by:",
+    opts: ["A single ellipse", "A double ellipse", "A dashed ellipse", "A rectangle"],
+    ans: 1
+  },
+  {
+    q: "A weak entity set is one that:",
+    opts: ["Has no attributes", "Cannot exist without being associated with another (owner) entity set", "Has more than one key attribute", "Has only one attribute"],
+    ans: 1
+  },
+  {
+    q: "In E-R modeling, a 'partial key' belongs to:",
+    opts: ["A strong entity set", "A weak entity set", "A composite attribute", "A multi-valued attribute"],
+    ans: 1
+  },
+  {
+    q: "What is the cardinality ratio for a relationship where one instructor can teach many courses but a course is taught by only one instructor?",
+    opts: ["Many-to-Many (M:N)", "One-to-One (1:1)", "One-to-Many (1:N)", "Many-to-One (N:1)"],
+    ans: 2
+  },
+  {
+    q: "Structural constraints in E-R modeling include:",
+    opts: ["Cardinality ratios and participation constraints", "Primary keys and foreign keys", "Normalization forms and dependencies", "Indexes and views"],
+    ans: 0
+  },
+  {
+    q: "Total participation in E-R diagram is shown by:",
+    opts: ["A single line connecting entity to relationship", "A double line connecting entity to relationship", "A dashed line", "A dotted ellipse"],
+    ans: 1
+  },
+  {
+    q: "Specialization in E-R modeling refers to:",
+    opts: ["Combining multiple entity types into a generic super-class", "Defining subclasses from a higher-level entity set by filtering based on some characteristics", "Creating a many-to-many relationship", "Adding derived attributes to an entity"],
+    ans: 1
+  },
+  {
+    q: "Generalization in E-R modeling is the process of:",
+    opts: ["Breaking an entity into subclasses", "Combining lower-level entity sets into a single higher-level (superclass) entity set", "Defining new attributes for an entity", "Creating composite relationships"],
+    ans: 1
+  },
+  {
+    q: "In E-R to relational mapping, a weak entity set is converted to a table whose primary key is:",
+    opts: ["Only the partial key of the weak entity", "The primary key of the owner entity only", "A combination of the partial key and the primary key of the owner entity", "Any attribute of the weak entity"],
+    ans: 2
+  },
+  {
+    q: "A derived attribute in an E-R diagram is shown as:",
+    opts: ["A double ellipse", "A dashed/dotted ellipse", "A rectangle", "A diamond"],
+    ans: 1
+  },
+  {
+    q: "Which of the following is an example of a composite attribute?",
+    opts: ["Age (derived from DOB)", "Phone numbers (can be multiple)", "Address (consisting of street, city, state, zip)", "Employee ID (unique identifier)"],
+    ans: 2
+  },
+  {
+    q: "The concept of 'inheritance' in enhanced E-R (EER) modeling means:",
+    opts: ["Subclasses inherit the attributes and relationships of their superclass", "Superclasses inherit attributes from subclasses", "All entities inherit keys from weak entities", "Relationships inherit attributes from participating entities"],
+    ans: 0
+  },
+
+  // ─── UNIT III: Data Normalization ───────────────────────────
+  {
+    q: "A relation is in First Normal Form (1NF) if:",
+    opts: ["It has no partial dependencies", "All attributes have atomic (single-valued, indivisible) values", "It has no transitive dependencies", "It is in BCNF"],
+    ans: 1
+  },
+  {
+    q: "A relation is in Second Normal Form (2NF) if:",
+    opts: ["It is in 1NF and has no partial dependencies on the primary key", "It is in 1NF and has no transitive dependencies", "It is in 3NF and has no multi-valued dependencies", "All attributes are directly dependent on the candidate key"],
+    ans: 0
+  },
+  {
+    q: "A partial dependency occurs when:",
+    opts: ["A non-prime attribute depends on the entire composite primary key", "A non-prime attribute depends on only a part of a composite primary key", "A prime attribute depends on another prime attribute", "A non-prime attribute depends on another non-prime attribute"],
+    ans: 1
+  },
+  {
+    q: "A relation is in Third Normal Form (3NF) if:",
+    opts: ["It is in 2NF and every non-prime attribute is non-transitively dependent on the primary key", "It is in 1NF and has no partial dependencies", "It is in BCNF and has no multi-valued dependencies", "All attributes are in the primary key"],
+    ans: 0
+  },
+  {
+    q: "Transitive dependency occurs when:",
+    opts: ["A non-prime attribute A depends on another non-prime attribute B, which depends on the primary key", "A prime attribute depends on a non-prime attribute", "Two tables share the same primary key", "A foreign key references a non-primary key"],
+    ans: 0
+  },
+  {
+    q: "Boyce-Codd Normal Form (BCNF) is a stricter version of:",
+    opts: ["1NF", "2NF", "3NF", "4NF"],
+    ans: 2
+  },
+  {
+    q: "A relation is in BCNF if for every non-trivial functional dependency X → Y:",
+    opts: ["Y is a prime attribute", "X is a superkey of the relation", "X is a prime attribute", "Y is contained in X"],
+    ans: 1
+  },
+  {
+    q: "Which normal form deals with multi-valued dependencies?",
+    opts: ["1NF", "2NF", "3NF", "4NF"],
+    ans: 3
+  },
+  {
+    q: "A functional dependency X → Y means:",
+    opts: ["For each value of Y, there is exactly one value of X", "For each value of X, there is exactly one value of Y", "X and Y always have the same values", "Y can have multiple values for a single X"],
+    ans: 1
+  },
+  {
+    q: "Armstrong's axioms for functional dependencies include:",
+    opts: ["Reflexivity, Augmentation, Transitivity", "Commutativity, Associativity, Distributivity", "Closure, Projection, Join", "Union, Difference, Intersection"],
+    ans: 0
+  },
+  {
+    q: "The closure of a set of attributes A+ with respect to a set F of functional dependencies gives:",
+    opts: ["All attributes that are functionally dependent on A", "All functional dependencies in F", "Only the primary key attributes", "The minimal cover of F"],
+    ans: 0
+  },
+  {
+    q: "Which of the following is the goal of normalization?",
+    opts: ["To increase data redundancy for faster retrieval", "To eliminate data redundancy and insertion/deletion/update anomalies", "To combine all tables into one large table", "To add more attributes to each relation"],
+    ans: 1
+  },
+  {
+    q: "An insertion anomaly in an unnormalized table means:",
+    opts: ["Data cannot be deleted without losing other information", "Data cannot be inserted without providing values for unrelated attributes", "Data is duplicated across multiple rows", "A query returns incorrect results"],
+    ans: 1
+  },
+  {
+    q: "A lossless-join decomposition ensures that:",
+    opts: ["No functional dependencies are lost", "Joining the decomposed relations produces exactly the original relation", "All relations are in BCNF", "No data redundancy exists in the decomposed relations"],
+    ans: 1
+  },
+  {
+    q: "5th Normal Form (5NF) deals with:",
+    opts: ["Multi-valued dependencies", "Join dependencies", "Transitive dependencies", "Partial dependencies"],
+    ans: 1
+  },
+
+  // ─── UNIT IV: Relational Model & SQL ────────────────────────
+  {
+    q: "In the relational model, a tuple is equivalent to:",
+    opts: ["A column", "A row/record in a table", "A table", "A primary key"],
+    ans: 1
+  },
+  {
+    q: "A domain in the relational model defines:",
+    opts: ["The set of permissible values for an attribute", "The primary key of a relation", "The number of tuples in a relation", "The relationship between two tables"],
+    ans: 0
+  },
+  {
+    q: "The degree of a relation refers to:",
+    opts: ["The number of tuples (rows)", "The number of attributes (columns)", "The number of candidate keys", "The number of foreign keys"],
+    ans: 1
+  },
+  {
+    q: "A superkey is:",
+    opts: ["A minimal set of attributes that uniquely identifies a tuple", "Any set of attributes that uniquely identifies a tuple", "An attribute that references another table", "The primary key of a weak entity"],
+    ans: 1
+  },
+  {
+    q: "A candidate key is:",
+    opts: ["Any superkey of a relation", "A minimal superkey (no proper subset is also a superkey)", "The key chosen as the primary key", "A foreign key that is also a primary key"],
+    ans: 1
+  },
+  {
+    q: "The referential integrity constraint requires that:",
+    opts: ["A primary key cannot be NULL", "A foreign key value must match an existing primary key value in the referenced relation, or be NULL", "All attributes must have unique values", "Each table must have exactly one primary key"],
+    ans: 1
+  },
+  {
+    q: "In relational algebra, the SELECT (σ) operation:",
+    opts: ["Extracts specific columns from a relation", "Filters tuples that satisfy a given condition", "Combines two relations based on a common attribute", "Removes duplicate tuples from a relation"],
+    ans: 1
+  },
+  {
+    q: "In relational algebra, the PROJECT (π) operation:",
+    opts: ["Filters rows based on a condition", "Extracts specific columns and removes duplicates", "Joins two relations", "Computes the set difference of two relations"],
+    ans: 1
+  },
+  {
+    q: "Which relational algebra operation combines all tuples from two union-compatible relations?",
+    opts: ["JOIN", "PROJECT", "UNION", "PRODUCT"],
+    ans: 2
+  },
+  {
+    q: "The NATURAL JOIN of two relations:",
+    opts: ["Combines all tuples regardless of any condition", "Joins on all attributes with the same name and eliminates duplicate columns", "Is the same as a Cartesian product", "Requires an explicit ON condition"],
+    ans: 1
+  },
+  {
+    q: "In SQL, which clause is used to filter groups formed by GROUP BY?",
+    opts: ["WHERE", "HAVING", "ORDER BY", "FILTER"],
+    ans: 1
+  },
+  {
+    q: "The SQL statement to retrieve all columns from a table named 'Students' is:",
+    opts: ["FETCH ALL FROM Students;", "SELECT * FROM Students;", "GET ALL Students;", "DISPLAY Students.*;"],
+    ans: 1
+  },
+  {
+    q: "Which SQL command is used to remove all rows from a table without deleting the table structure?",
+    opts: ["DROP TABLE", "DELETE FROM table WHERE 1=1", "TRUNCATE TABLE", "REMOVE ALL FROM table"],
+    ans: 2
+  },
+  {
+    q: "A VIEW in SQL is:",
+    opts: ["A physical copy of a table", "A virtual table based on the result of a SELECT query", "An index on a column", "A stored procedure"],
+    ans: 1
+  },
+  {
+    q: "Which SQL aggregate function returns the number of rows in a group?",
+    opts: ["SUM()", "AVG()", "COUNT()", "MAX()"],
+    ans: 2
+  },
+  {
+    q: "The SQL INNER JOIN returns:",
+    opts: ["All rows from both tables", "Rows with matching values in both tables", "All rows from the left table and matching rows from the right", "All rows from the right table and matching rows from the left"],
+    ans: 1
+  },
+  {
+    q: "Which SQL constraint ensures that a column cannot have NULL values?",
+    opts: ["UNIQUE", "CHECK", "NOT NULL", "DEFAULT"],
+    ans: 2
+  },
+  {
+    q: "The SQL command CREATE INDEX is used to:",
+    opts: ["Create a new database table", "Create an index to speed up data retrieval", "Define a primary key constraint", "Create a stored procedure"],
+    ans: 1
+  },
+  {
+    q: "A subquery in SQL is:",
+    opts: ["A query that updates multiple rows at once", "A query nested inside another query", "A query that uses the GROUP BY clause", "A query that performs a JOIN operation"],
+    ans: 1
+  },
+  {
+    q: "Which SQL clause is used to sort the result set in ascending or descending order?",
+    opts: ["GROUP BY", "HAVING", "ORDER BY", "SORT BY"],
+    ans: 2
+  },
+  {
+    q: "The SQL keyword DISTINCT is used to:",
+    opts: ["Select all rows including duplicates", "Return only unique (non-duplicate) values", "Filter rows based on a condition", "Join two tables"],
+    ans: 1
+  },
+  {
+    q: "Which of the following SQL commands is used to modify existing data in a table?",
+    opts: ["INSERT", "ALTER", "UPDATE", "MODIFY"],
+    ans: 2
+  },
+  {
+    q: "The SQL LEFT OUTER JOIN returns:",
+    opts: ["Only matching rows from both tables", "All rows from the left table and matching rows from the right table (NULLs for non-matches)", "All rows from both tables", "Only rows that do not match"],
+    ans: 1
+  },
+  {
+    q: "In SQL, which of the following is a valid aggregate function?",
+    opts: ["COMPUTE()", "CALCULATE()", "TOTAL()", "AVG()"],
+    ans: 3
+  },
+  {
+    q: "A FOREIGN KEY in SQL:",
+    opts: ["Must always be unique", "References a PRIMARY KEY in another (or the same) table", "Cannot accept NULL values", "Is automatically indexed by the DBMS"],
+    ans: 1
+  },
+
+  // ─── UNIT V: Concurrency Control & Transactions ─────────────
+  {
+    q: "A database transaction must satisfy the ACID properties. 'Atomicity' means:",
+    opts: ["The transaction can be partially executed", "The transaction executes completely or not at all (all-or-nothing)", "Multiple transactions execute simultaneously", "Data is permanently stored after a transaction"],
+    ans: 1
+  },
+  {
+    q: "In ACID properties, 'Consistency' means:",
+    opts: ["A transaction executes in isolation from other transactions", "A transaction brings the database from one valid state to another valid state", "All operations in a transaction execute atomically", "Changes are permanently recorded"],
+    ans: 1
+  },
+  {
+    q: "'Isolation' in ACID properties means:",
+    opts: ["Transactions are executed one at a time physically", "Intermediate states of a transaction are not visible to other concurrent transactions", "Data changes are permanent after commit", "A transaction either fully completes or fully fails"],
+    ans: 1
+  },
+  {
+    q: "'Durability' in ACID properties ensures that:",
+    opts: ["Transactions are transparent to each other", "Once a transaction is committed, its changes are permanent even in case of system failure", "Data is consistent before and after a transaction", "Transactions execute atomically"],
+    ans: 1
+  },
+  {
+    q: "A 'dirty read' concurrency problem occurs when:",
+    opts: ["A transaction reads data written by another committed transaction", "A transaction reads data written by another uncommitted transaction", "A transaction reads the same data twice and gets different values", "A transaction cannot find a row that existed before"],
+    ans: 1
+  },
+  {
+    q: "The 'unrepeatable read' problem occurs when:",
+    opts: ["A transaction reads uncommitted data of another transaction", "A transaction reads a row, another transaction modifies that row, and the first transaction reads it again getting a different value", "A transaction sees new rows inserted by another committed transaction", "Two transactions deadlock each other"],
+    ans: 1
+  },
+  {
+    q: "A 'phantom read' occurs when:",
+    opts: ["A transaction reads data from a rolled-back transaction", "A transaction re-executes a query and finds new rows that were inserted by another committed transaction", "A transaction reads the same row and gets different values", "Two transactions update the same row simultaneously"],
+    ans: 1
+  },
+  {
+    q: "Two-Phase Locking (2PL) protocol consists of which two phases?",
+    opts: ["Read phase and Write phase", "Growing phase (acquiring locks) and Shrinking phase (releasing locks)", "Locking phase and Unlocking phase in alternation", "Shared phase and Exclusive phase"],
+    ans: 1
+  },
+  {
+    q: "A shared lock (S-lock) on a data item allows:",
+    opts: ["Only one transaction to read the item at a time", "Multiple transactions to read the item simultaneously, but no writes", "One transaction to both read and write the item exclusively", "Any number of transactions to read and write the item"],
+    ans: 1
+  },
+  {
+    q: "An exclusive lock (X-lock) on a data item means:",
+    opts: ["Multiple transactions can read and write the item", "Only the holding transaction can read or write the item; no other locks allowed", "Multiple transactions can read but not write", "The item is locked permanently"],
+    ans: 1
+  },
+  {
+    q: "A deadlock in a DBMS occurs when:",
+    opts: ["A single transaction holds too many locks", "Two or more transactions are waiting for each other to release locks, creating a circular wait", "A transaction cannot acquire a lock within a time limit", "The database runs out of memory"],
+    ans: 1
+  },
+  {
+    q: "Which of the following is a deadlock detection method?",
+    opts: ["Timeout-based approach", "Wait-for graph (checking for cycles)", "Wound-Wait scheme", "All of the above"],
+    ans: 3
+  },
+  {
+    q: "The purpose of the ROLLBACK operation in a transaction is to:",
+    opts: ["Make all changes in the transaction permanent", "Undo all changes made by the current transaction and restore the previous state", "Create a savepoint in the transaction", "Commit partial changes of the transaction"],
+    ans: 1
+  },
+  {
+    q: "The COMMIT operation in a transaction:",
+    opts: ["Undoes all changes made by the transaction", "Makes all changes made by the transaction permanent in the database", "Starts a new transaction", "Creates a checkpoint in the database"],
+    ans: 1
+  },
+  {
+    q: "A checkpoint in database recovery is used to:",
+    opts: ["Lock the database for exclusive access", "Reduce the amount of work to be done during recovery by recording a consistent state periodically", "Detect deadlocks between transactions", "Increase transaction throughput"],
+    ans: 1
+  },
+  {
+    q: "The UNDO operation in database recovery is applied to:",
+    opts: ["Committed transactions that need to be re-executed", "Uncommitted transactions whose changes must be reversed during recovery", "All transactions regardless of their status", "Only read-only transactions"],
+    ans: 1
+  },
+  {
+    q: "The REDO operation in database recovery is applied to:",
+    opts: ["Uncommitted transactions that must be rolled back", "Committed transactions whose changes must be re-applied (they may not have been written to disk)", "All transactions after a system failure", "Only write operations"],
+    ans: 1
+  },
+  {
+    q: "A schedule is said to be 'serializable' if:",
+    opts: ["All transactions execute one at a time without interleaving", "It produces the same result as some serial execution of the same transactions", "All transactions are read-only", "Each transaction commits before the next one begins"],
+    ans: 1
+  },
+  {
+    q: "Conflict serializability of a schedule is determined using:",
+    opts: ["A wait-for graph", "A precedence graph (serialization graph) checking for cycles", "The ACID properties", "The two-phase locking protocol"],
+    ans: 1
+  },
+  {
+    q: "Database security involves which of the following mechanisms?",
+    opts: ["Authentication, Authorization, and Encryption", "Only physical security measures", "Only access control lists", "Normalization and indexing"],
+    ans: 0
+  },
+  {
+    q: "The SQL GRANT command is used to:",
+    opts: ["Remove user privileges", "Give users specific privileges on database objects", "Create a new user account", "Lock a table for exclusive access"],
+    ans: 1
+  },
+  {
+    q: "The SQL REVOKE command is used to:",
+    opts: ["Grant new privileges to a user", "Remove previously granted privileges from a user", "Create a new role", "Commit a transaction"],
+    ans: 1
+  },
+  {
+    q: "Which type of database failure involves the loss of the entire disk contents?",
+    opts: ["Transaction failure", "System (crash) failure", "Media (disk) failure", "Network failure"],
+    ans: 2
+  },
+  {
+    q: "A log-based recovery system maintains a log that records:",
+    opts: ["Only SELECT queries", "All updates/modifications made by each transaction", "Only committed transactions", "Only schema changes"],
+    ans: 1
+  },
+  {
+    q: "Optimistic concurrency control assumes that:",
+    opts: ["Conflicts between transactions are frequent and locks are needed", "Conflicts are rare and transactions can execute without locks, validating at commit time", "All transactions must wait for locks before proceeding", "Only one transaction can execute at a time"],
+    ans: 1
+  },
+  {
+    q: "Timestamp-based concurrency control assigns each transaction:",
+    opts: ["A priority based on its size", "A unique timestamp indicating when it started, used to order conflicting operations", "A set of locks for its entire duration", "A random ID for identification"],
+    ans: 1
+  }
+];
+
+/* ═══════════════════════════════ STATE ═══════════════════════════════ */
+let current = 0;
+let answered = new Array(questions.length).fill(null); // null=unanswered, obj={selected,correct}
+let score = 0;
+let timer = null;
+let elapsed = 0;
+
+/* ═══════════════════════════════ INIT ════════════════════════════════ */
+function init() {
+  buildGrid();
+  loadQuestion(0);
+  startTimer();
+}
+
+function startTimer() {
+  elapsed = 0;
+  clearInterval(timer);
+  timer = setInterval(() => {
+    elapsed++;
+    const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+    const s = String(elapsed % 60).padStart(2, '0');
+    document.getElementById('s-time').textContent = `${m}:${s}`;
+  }, 1000);
+}
+
+/* ═══════════════════════════════ BUILD GRID ══════════════════════════ */
+function buildGrid() {
+  const gc = document.getElementById('grid-cells');
+  gc.innerHTML = '';
+  questions.forEach((_, i) => {
+    const cell = document.createElement('div');
+    cell.className = 'gc' + (i === current ? ' current' : '');
+    cell.id = `gc-${i}`;
+    cell.textContent = i + 1;
+    cell.onclick = () => loadQuestion(i);
+    gc.appendChild(cell);
+  });
+}
+
+function updateGrid() {
+  questions.forEach((_, i) => {
+    const cell = document.getElementById(`gc-${i}`);
+    if (!cell) return;
+    cell.className = 'gc';
+    if (i === current) cell.classList.add('current');
+    if (answered[i]) {
+      cell.classList.add(answered[i].correct ? 'answered' : 'skipped');
+    }
+  });
+}
+
+/* ═══════════════════════════════ LOAD QUESTION ═══════════════════════ */
+function loadQuestion(idx) {
+  current = idx;
+  const q = questions[idx];
+  const card = document.getElementById('q-card');
+
+  // Re-animate card
+  card.style.animation = 'none';
+  card.offsetHeight; // reflow
+  card.style.animation = '';
+
+  document.getElementById('q-number').textContent = `QUESTION ${String(idx+1).padStart(2,'0')} / ${questions.length}`;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('q-counter').textContent = `${idx+1} / ${questions.length}`;
+
+  const labels = ['A', 'B', 'C', 'D'];
+  const icons  = ['<i class="fa fa-check-circle"></i>', '<i class="fa fa-times-circle"></i>'];
+  const optDiv = document.getElementById('options');
+  optDiv.innerHTML = '';
+
+  q.opts.forEach((text, oi) => {
+    const div = document.createElement('div');
+    div.className = 'opt';
+    div.id = `opt-${oi}`;
+
+    const lbl = document.createElement('div');
+    lbl.className = 'opt-label';
+    lbl.textContent = labels[oi];
+
+    const txt = document.createElement('div');
+    txt.className = 'opt-text';
+    txt.textContent = text;
+
+    const ico = document.createElement('div');
+    ico.className = 'opt-icon';
+
+    div.appendChild(lbl);
+    div.appendChild(txt);
+    div.appendChild(ico);
+
+    // If already answered, restore state
+    if (answered[idx] !== null) {
+      div.classList.add('disabled');
+      if (oi === q.ans) {
+        div.classList.add('correct');
+        ico.innerHTML = '<i class="fa fa-check-circle"></i>';
+      } else if (oi === answered[idx].selected && oi !== q.ans) {
+        div.classList.add('wrong');
+        ico.innerHTML = '<i class="fa fa-times-circle"></i>';
+      }
+    } else {
+      div.onclick = () => selectOption(oi);
+    }
+
+    optDiv.appendChild(div);
+  });
+
+  // Update nav buttons
+  document.getElementById('btn-prev').disabled = idx === 0;
+  document.getElementById('btn-next').disabled = idx === questions.length - 1;
+
+  // Progress
+  const pct = Math.round(((idx + 1) / questions.length) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('s-pct').textContent = pct + '%';
+
+  updateGrid();
+}
+
+/* ═══════════════════════════════ SELECT OPTION ═══════════════════════ */
+function selectOption(selectedIdx) {
+  const q = questions[current];
+  const isCorrect = selectedIdx === q.ans;
+
+  answered[current] = { selected: selectedIdx, correct: isCorrect };
+  if (isCorrect) score++;
+
+  // Update score display
+  document.getElementById('s-correct').textContent = score;
+  document.getElementById('s-wrong').textContent =
+    answered.filter(a => a !== null && !a.correct).length;
+
+  // Disable all options
+  const opts = document.querySelectorAll('.opt');
+  opts.forEach(o => { o.classList.add('disabled'); o.onclick = null; });
+
+  // Mark correct
+  const correctEl = document.getElementById(`opt-${q.ans}`);
+  correctEl.classList.add('correct');
+  correctEl.querySelector('.opt-icon').innerHTML = '<i class="fa fa-check-circle"></i>';
+
+  // Mark wrong (if wrong answer)
+  if (!isCorrect) {
+    const wrongEl = document.getElementById(`opt-${selectedIdx}`);
+    wrongEl.classList.add('wrong');
+    wrongEl.querySelector('.opt-icon').innerHTML = '<i class="fa fa-times-circle"></i>';
+  }
+
+  updateGrid();
+
+  // Auto-advance after 1.2s if not last question
+  if (current < questions.length - 1) {
+    setTimeout(() => loadQuestion(current + 1), 1200);
+  }
+}
+
+/* ═══════════════════════════════ NAVIGATION ══════════════════════════ */
+document.getElementById('btn-prev').onclick = () => { if (current > 0) loadQuestion(current - 1); };
+document.getElementById('btn-next').onclick = () => { if (current < questions.length - 1) loadQuestion(current + 1); };
+
+document.getElementById('toggle-grid').onclick = () => {
+  const grid = document.getElementById('q-grid');
+  grid.classList.toggle('open');
+};
+
+document.getElementById('btn-finish').onclick = () => showResult();
+
+/* ═══════════════════════════════ RESULT ══════════════════════════════ */
+function showResult() {
+  clearInterval(timer);
+  document.getElementById('quiz-screen').style.display = 'none';
+  const rs = document.getElementById('result-screen');
+  rs.classList.add('show');
+
+  const total = questions.length;
+  const correct = answered.filter(a => a && a.correct).length;
+  const wrong   = answered.filter(a => a && !a.correct).length;
+  const skipped = answered.filter(a => a === null).length;
+  const pct = Math.round((correct / total) * 100);
+
+  // Ring animation
+  const circumference = 2 * Math.PI * 80; // r=80 → ~502
+  const ring = document.getElementById('ring-fill');
+  ring.style.strokeDasharray = circumference;
+  ring.style.strokeDashoffset = circumference;
+
+  let color = pct >= 75 ? '#39ff14' : pct >= 50 ? '#ffd700' : '#ff3860';
+  ring.style.stroke = color;
+
+  setTimeout(() => {
+    ring.style.strokeDashoffset = circumference - (circumference * pct / 100);
+  }, 200);
+
+  document.getElementById('r-score').style.color = color;
+  document.getElementById('r-score').textContent = `${correct}/${total}`;
+
+  let grade, msg;
+  if (pct >= 90)      { grade = 'OUTSTANDING'; msg = '// You have mastered DBMS! Exceptional performance. //'; }
+  else if (pct >= 75) { grade = 'EXCELLENT';   msg = '// Great command over the subject. Well done! //'; }
+  else if (pct >= 60) { grade = 'GOOD';        msg = '// Solid understanding. Keep practising! //'; }
+  else if (pct >= 40) { grade = 'AVERAGE';     msg = '// You need to revise the concepts more carefully. //'; }
+  else                { grade = 'NEEDS WORK';  msg = '// Study the syllabus again and retake the test. //'; }
+
+  document.getElementById('r-grade').textContent = grade;
+  document.getElementById('r-grade').style.color = color;
+  document.getElementById('r-msg').textContent = msg;
+  document.getElementById('rr-correct').textContent = correct;
+  document.getElementById('rr-wrong').textContent   = wrong;
+  document.getElementById('rr-skip').textContent    = skipped;
+  document.getElementById('rr-pct').textContent     = pct + '%';
+  const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+  const s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('rr-time').textContent    = `${m}:${s}`;
+
+  if (pct >= 75) launchConfetti();
+}
+
+function restartQuiz() {
+  answered = new Array(questions.length).fill(null);
+  score = 0;
+  current = 0;
+  document.getElementById('s-correct').textContent = '0';
+  document.getElementById('s-wrong').textContent   = '0';
+  document.getElementById('result-screen').classList.remove('show');
+  document.getElementById('quiz-screen').style.display = '';
+  buildGrid();
+  loadQuestion(0);
+  startTimer();
+}
+
+/* ═══════════════════════════════ CONFETTI ════════════════════════════ */
+function launchConfetti() {
+  const colors = ['#00ffe7','#39ff14','#a78bfa','#ffd700','#ff6b6b'];
+  for (let i = 0; i < 80; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-particle';
+    const size = Math.random() * 10 + 6;
+    p.style.cssText = `
+      left: ${Math.random()*100}vw;
+      width: ${size}px; height: ${size * 0.6}px;
+      background: ${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration: ${Math.random()*2+2}s;
+      animation-delay: ${Math.random()*1.5}s;
+      opacity: ${Math.random()*0.8+0.2};
+      border-radius: ${Math.random()>0.5?'50%':'3px'};
+    `;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 5000);
+  }
+}
+
+/* ═══════════════════════════════ PARTICLES ═══════════════════════════ */
+(function() {
+  const canvas = document.getElementById('particles');
+  const ctx    = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  class Particle {
+    constructor() { this.reset(); }
+    reset() {
+      this.x  = Math.random() * W;
+      this.y  = Math.random() * H;
+      this.vx = (Math.random() - 0.5) * 0.3;
+      this.vy = (Math.random() - 0.5) * 0.3;
+      this.r  = Math.random() * 1.5 + 0.5;
+      this.a  = Math.random() * 0.5 + 0.1;
+    }
+    update() {
+      this.x += this.vx; this.y += this.vy;
+      if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(0,255,231,${this.a})`;
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < 90; i++) particles.push(new Particle());
+
+  function connect() {
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i+1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const d  = Math.sqrt(dx*dx + dy*dy);
+        if (d < 120) {
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(0,255,231,${(1-d/120)*0.12})`;
+          ctx.lineWidth = 0.5;
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function loop() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => { p.update(); p.draw(); });
+    connect();
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+
+/* ═══════════════════════════════ START ═══════════════════════════════ */
+init();
+</script>
+</body>
+</html>
